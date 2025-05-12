@@ -16,10 +16,10 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="signup" options={{ title: 'Sign Up' }} />
-        <Stack.Screen name="dashboard" options={{ title: 'Dashboard' }} />
+        <Stack.Screen name="signup" options={{headerShown: false }} />
+        <Stack.Screen name="dashboard" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
   );
-}
+} 

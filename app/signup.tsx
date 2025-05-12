@@ -1,6 +1,18 @@
+// SignupScreen.tsx
+import React, { useState } from 'react';
+import {
+  SafeAreaView,
+  ScrollView,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { Link, useRouter } from 'expo-router';
-import { useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from '../constants/endpoint';
 
@@ -17,10 +29,8 @@ export default function SignupScreen() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Signup failed');
-
       await AsyncStorage.setItem('token', data.token);
       Alert.alert('Signup successful!');
       router.replace('/');
@@ -30,22 +40,85 @@ export default function SignupScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
-      <TextInput placeholder="Name" style={styles.input} onChangeText={setName} />
-      <TextInput placeholder="Email" style={styles.input} onChangeText={setEmail} />
-      <TextInput placeholder="Password" style={styles.input} secureTextEntry onChangeText={setPassword} />
-      <Button title="Sign Up" onPress={handleSignup} />
-      <Text style={styles.linkText}>
-        Already have an account? <Link href="/">Login</Link>
-      </Text>
-    </View>
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.flex}
+      >
+        <ScrollView contentContainerStyle={styles.container}>
+          <Text style={styles.title}>Sign Up</Text>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Name"
+            placeholderTextColor="#888"
+            value={name}
+            onChangeText={setName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="#888"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor="#888"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+
+          <TouchableOpacity style={styles.primaryBtn} onPress={handleSignup}>
+            <Text style={styles.primaryBtnText}>Sign Up</Text>
+          </TouchableOpacity>
+
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>
+              Already have an account?{' '}
+              <Text style={styles.link}>
+                <Link href="/">Login</Link>
+              </Text>
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-  input: { borderWidth: 1, borderColor: '#ccc', padding: 10, marginBottom: 15, borderRadius: 6 },
-  linkText: { textAlign: 'center', marginTop: 15 },
+  safe: { flex: 1, backgroundColor: '#f8f9fa' },
+  flex: { flex: 1 },
+  container: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 24, textAlign: 'center' },
+  input: {
+    width: '100%',
+    backgroundColor: 'white',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  primaryBtn: {
+    width: '100%',
+    backgroundColor: '#0066cc',
+    paddingVertical: 14,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  primaryBtnText: { color: 'white', textAlign: 'center', fontWeight: '600' },
+  footer: { marginTop: 24, alignItems: 'center' },
+  footerText: { color: '#555' },
+  link: { color: '#0066cc', textDecorationLine: 'underline' },
 });
